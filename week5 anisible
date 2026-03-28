@@ -1,0 +1,104 @@
+sudo su-
+apt update -y
+apt-add-repository ppa:ansible/ansible
+apt update
+apt install ansible -y
+ansible --version
+nano /etc/hosts
+Add :15.168.39.192 server1
+     13.208.141.45 server2
+ssh-keygen -t rsa
+press enter-enter-enter
+cd .ssh
+cat id.rsa.pub
+in server 1 and server 2 paste rsa.pub id in
+nano .ssh/authorized_keys
+in ansible server type 
+ping server1
+ping server2
+cd
+mkdir ansible
+cd ansible
+create nano inventory
+nano inventory
+[webservers]
+server1
+server2 
+create nano anisble.cfg
+[default]
+inventory=/root/ansible/inventory
+remote_user=ubuntu
+ask_pass=false  
+for testing install nginx and apache in server1 and server2
+nano install_webservers.yml
+paste code
+---
+- name: Install Web Servers
+  hosts: webservers
+  become: true
+  tasks:
+
+    - name: Install Nginx on server1
+      apt:
+        name: nginx
+        state: present
+      when: inventory_hostname == 'server1'
+
+    - name: Install Apache on server2
+      apt:
+        name: apache2
+        state: present
+      when: inventory_hostname == 'server2'
+
+    - name: Ensure Nginx is started and enabled on server1
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+      when: inventory_hostname == 'server1'
+
+    - name: Ensure Apache is started and enabled on server2
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+      when: inventory_hostname == 'server2'
+
+(save it and come out from the shell) 
+---
+- name: Install Web Servers
+  hosts: webservers
+  become: true
+
+  tasks:
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Nginx on server1
+      apt:
+        name: nginx
+        state: present
+      when: inventory_hostname == 'server1'
+
+    - name: Install Apache on server2
+      apt:
+        name: apache2
+        state: present
+      when: inventory_hostname == 'server2'
+
+    - name: Ensure Nginx is started and enabled on server1
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+      when: inventory_hostname == 'server1'
+
+    - name: Ensure Apache is started and enabled on server2
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+      when: inventory_hostname == 'server2'
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory install_webservers.yml
