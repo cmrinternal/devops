@@ -1,0 +1,79 @@
+create a new instance in ec2 aws
+then to install docker 
+sudo apt update
+sudo apt install -y docker.io
+to start docker
+sudo systemctl start docker
+to enable
+sudo systemctl enable docker
+to install docker compose
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.17.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+To Check versions
+docker --version
+docker-compose --version
+create selenium grid
+mkdir selenium-grid && cd selenium-grid
+nano doker-compose.yml
+paste code
+version: "3"
+services:
+  selenium-hub:
+    image: selenium/hub:4.0.0-rc-2-20210930
+    container_name: seleniumHub
+    ports:
+      - "4444:4444"
+
+  chrome:
+    image: selenium/node-chrome:4.0.0-rc-2-20210930
+    container_name: chromeNode
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    shm_size: 2g
+
+  firefox:
+    image: selenium/node-firefox:4.0.0-rc-2-20210930
+    container_name: firefoxNode
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    shm_size: 2g
+to start selenium grid
+run
+sudo doker-compose up -d
+To Check containers:
+sudo docker ps
+Open in your browser: 
+http://<Your-EC2-Public-IP>:4444/ui
+install python and selenium
+sudo apt install python3-venv python3-full -y
+pip install selenium
+for testing
+nano test_grid.py
+Paste below code:
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+browser = "chrome"
+GRID_URL = "http://localhost:4444/wd/hub"
+options = None
+if browser == "chrome":
+    options = webdriver.ChromeOptions()
+elif browser == "firefox":
+    options = webdriver.FirefoxOptions()
+else:
+    raise Exception("Unsupported browser!")
+driver = webdriver.Remote(
+command_executor=GRID_URL,
+    options=options
+)
+driver.get("https://www.google.com")
+print("Title:", driver.title)
+driver.quit()
+python test_grid.py
