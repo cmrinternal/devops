@@ -1,0 +1,22 @@
+NOW CREATE THE KUBERNETES CLUSTER
+open cloud shell
+check any container are avalaible
+Gcloud container clusters list
+gcloud container cluster create my-cluster--zone us-centrall-a
+it take 5 to 10 min to create container
+now go and check kubernetes engine to find cluster
+to get crendentials
+gcloud container cluster get-credential my-credential--zone us-centrall-a
+to see all nodes
+kubectl get node
+create pod
+kubernetes run --image tomcat-webserver
+to see pods
+kubectl get pod
+for accesing application you need to accese port
+gcloud compute firewall-rule create rule2 --allow tcp:8080
+how to accese the pod is 
+take external ip adds port 8080
+in broswer ipaddress:8080 
+you will see jenkins
+  
