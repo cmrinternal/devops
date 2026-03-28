@@ -1,0 +1,20 @@
+PROMETHEUS SETUP:
+
+helm repo add prometheus  https://prometheus-community.github.io/helm-charts
+to install
+helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
+Check the prometheus pods and services
+kubectl get pods -n monitoring
+Access prometheus and port forwarding
+kubectl port-forward svc/prometheus-kube-prometheus-prometheus 9090:9090 -n monitoring
+Click on the  webpreview change port 9090
+
+ACCESS GRAFANA :
+kubectl get secret prometheus-grafana -n monitoring -o jsonpath="{.data.admin-user}" | base64 --decode ; echo
+If you run the above command u can see the username for grafana (admin)
+kubectl get secret prometheus-grafana -n monitoring -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+If you run the abvoe command u can see the password for grafana (prom-operator)
+PORT FORWARDING
+
+kubectl port-forward svc/prometheus-grafana 3000:80 -n monitoring
+Click on the web preview give the port no 3000 and click on change and preview u can see the grafana
